@@ -34,24 +34,51 @@ st.subheader("""Get the 100 latest tweets""")
 st.write("Get the 100 latest tweets")
 tweet_handle = st.text_input("Enter tweet handle without the @")
 
+posts = api.user_timeline(
+    screen_name=tweet_handle, count=100, lang="en", tweet_mode="extended")
+
+
+def cleanTxt(text):
+    text = re.sub('@[A-Za-z0–9]+', '', text)  # Removing @mentions
+    text = re.sub('#', '', text)  # Removing '#' hash tag
+    text = re.sub('RT[\s]+', '', text)  # Removing RT
+    text = re.sub('https?:\/\/\S+', '', text)  # Removing hyperlink
+    return text
+
 
 def get_data(user_name):
 
-    posts = api.user_timeline(
-        screen_name=tweet_handle, count=100, lang="en", tweet_mode="extended")
-
     df = pd.DataFrame(
         [tweet.full_text for tweet in posts], columns=['Tweets'])
+    return df
 
-    def cleanTxt(text):
-        text = re.sub('@[A-Za-z0–9]+', '', text)  # Removing @mentions
-        text = re.sub('#', '', text)  # Removing '#' hash tag
-        text = re.sub('RT[\s]+', '', text)  # Removing RT
-        text = re.sub('https?:\/\/\S+', '', text)  # Removing hyperlink
-        return text
+
+# Creating a button to fetch all the tweets
+if st.button("Show Data"):
+    st.success("Fetching Last 100 Tweets")
+    df = get_data(tweet_handle)
+    st.write(df)
+
+#Creating a function to retrieve the five most recent tweets:
+def get_five_tweets(user_name):
+
+    for tweet in posts[0:5]:
+        five_tweet = tweet.full_text + "\n"
+        return five_tweet
+        
+
+        # recent_tweets = get_five_tweets()
+        # return recent_tweets
+
+
+# Creating a button to fetch the recent five tweets:
+if st.button("Recent Tweets"):
+    st.success("Fetching Five Tweets")
+    five_tweets = get_five_tweets(tweet_handle)
+    st.write(five_tweets)
 
     # Clean the tweets
-    df['Tweets'] = df['Tweets'].apply(cleanTxt)
+    # df['Tweets'] = df['Tweets'].apply(cleanTxt)
 
     # def getSubjectivity(text):
     # 	return TextBlob(text).sentiment.subjectivity
@@ -75,16 +102,6 @@ def get_data(user_name):
     # 		return 'Positive'
 
     # df['Analysis'] = df['Polarity'].apply(getAnalysis)
-    return df
-
-
-if st.button("Show Data"):
-
-    st.success("Fetching Last 100 Tweets")
-
-    df = get_data(tweet_handle)
-
-    st.write(df)
 
 
 # Call the sentiment analysis algorythm
