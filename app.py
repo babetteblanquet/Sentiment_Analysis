@@ -32,10 +32,13 @@ st.markdown(html_temp, unsafe_allow_html=True)
 st.title("Get the 100 latest tweets")
 st.subheader("""Get the 100 latest tweets""")
 st.write("Get the 100 latest tweets")
-tweet_handle = st.text_input("Enter tweet handle without the @")
+tweet_handle = st.text_input("Enter tweet handle with @ or #.")
 
-posts = api.user_timeline(
-    screen_name=tweet_handle, count=100, lang="en", tweet_mode="extended")
+if tweet_handle =="":
+    posts = ""
+else:
+    posts = api.search(
+    q=tweet_handle, result_type='recent', count=100, lang="en", tweet_mode="extended")
 
 
 def cleanTxt(text):
@@ -59,23 +62,12 @@ if st.button("Show Data"):
     df = get_data(tweet_handle)
     st.write(df)
 
-#Creating a function to retrieve the five most recent tweets:
-def get_five_tweets(user_name):
-
-    for tweet in posts[0:5]:
-        five_tweet = tweet.full_text + "\n"
-        return five_tweet
-        
-
-        # recent_tweets = get_five_tweets()
-        # return recent_tweets
-
 
 # Creating a button to fetch the recent five tweets:
 if st.button("Recent Tweets"):
-    st.success("Fetching Five Tweets")
-    five_tweets = get_five_tweets(tweet_handle)
-    st.write(five_tweets)
+    st.success("Show the five recent tweets")
+    for tweet in posts[0:5]:
+        st.write(tweet.full_text + "\n")
 
     # Clean the tweets
     # df['Tweets'] = df['Tweets'].apply(cleanTxt)
