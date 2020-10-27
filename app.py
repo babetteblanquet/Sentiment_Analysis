@@ -1,17 +1,18 @@
 import streamlit as st
 import tweepy
-# from wordcloud import WordCloud
+from wordcloud import WordCloud
 import pandas as pd
 import numpy as np
 import re
 import matplotlib.pyplot as plt
+from PIL import Image
 # Import Tensorflow dependencies
 import tensorflow as tf
 from tensorflow.keras.layers import Embedding
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import one_hot
 from tensorflow.keras.models import load_model
-#Immport nltk dependencies
+# Immport nltk dependencies
 import nltk
 import re
 from nltk.corpus import stopwords
@@ -25,7 +26,9 @@ from config import accessTokenSecret
 # Load the model
 model = load_model("Datasets/tweeter_ml_trained_50000.h5")
 
-## Set up Streamlit in wide mode:
+# Set up Streamlit in wide mode:
+
+
 def _max_width_():
     max_width_str = f"max-width: 2000px;"
     st.markdown(
@@ -40,6 +43,7 @@ def _max_width_():
     )
 
 ### Streamlit Title - #####
+
 
 # st.title("Streamlit example")
 html_temp = """
@@ -77,47 +81,52 @@ else:
         q=tweet_handle, retweeted="False", result_type='recent', count=100, lang="en", tweet_mode="extended")
 
 # Create a function to preprocess the tweets to fit our ML model:
+
+
 def preprocessing(messages):
-#Initialise PorterStemmer for Stemming
+    # Initialise PorterStemmer for Stemming
     ps = PorterStemmer()
-#Create an empty list named corpus that will contain our cleaned sentences and words
+# Create an empty list named corpus that will contain our cleaned sentences and words
     corpus = []
-#Create a loop to clean all the text in messages:
+# Create a loop to clean all the text in messages:
     for i in range(0, len(messages)):
-    #print index
+        # print index
         print(i)
-    #use re (regular expressions) to substitute all characters except [a-zA-Z] by blank in message 'text'
+    # use re (regular expressions) to substitute all characters except [a-zA-Z] by blank in message 'text'
         review = re.sub('[^a-zA-Z]', ' ', messages[i])
-    #convert all the characters as lower case
+    # convert all the characters as lower case
         review = review.lower()
-    #split all the words in each sentence to be able to later remove the stopwords
+    # split all the words in each sentence to be able to later remove the stopwords
         review = review.split()
-    
-    #create a loop in review: for each word in review, keep only words that are not stopwords list and apply 'Stemming'
-        review = [ps.stem(word) for word in review if not word in stopwords.words('english')]
-    #join words with a space to build the review
+
+    # create a loop in review: for each word in review, keep only words that are not stopwords list and apply 'Stemming'
+        review = [ps.stem(word)
+                  for word in review if not word in stopwords.words('english')]
+    # join words with a space to build the review
         review = ' '.join(review)
-    #append the review into the corpus
+    # append the review into the corpus
         corpus.append(review)
-    #One_hot representation
+    # One_hot representation
     # each word in the corpus is allocated a number within the sentence.
-    voc_size=5000
-    onehot_repr=[one_hot(words,voc_size)for words in corpus]
-    #Word embedding
-    sent_length=31
-    #Embebbed each sentence as a matrix
-    embedded_docs=pad_sequences(onehot_repr,padding='pre',maxlen=sent_length)
-    #Storing embedded_docs into an array
+    voc_size = 5000
+    onehot_repr = [one_hot(words, voc_size)for words in corpus]
+    # Word embedding
+    sent_length = 31
+    # Embebbed each sentence as a matrix
+    embedded_docs = pad_sequences(
+        onehot_repr, padding='pre', maxlen=sent_length)
+    # Storing embedded_docs into an array
     X_final = np.array(embedded_docs)
     return(X_final)
+
 
 def getSentiment(array):
     #df['Tweets'] = df['Tweets'].apply(cleanTxt)
     messages = array
-    #Preprocessing tweets to fit the model
+    # Preprocessing tweets to fit the model
     X_final = preprocessing(messages)
-    #Predict y values on X_final
-    y_pred=model.predict_classes(X_final)
+    # Predict y values on X_final
+    y_pred = model.predict_classes(X_final)
 
     return y_pred
 
@@ -135,10 +144,11 @@ def get_data(user_name):
     X = df['Tweets']
     y = getSentiment(X)
     df['Sentiment'] = y
-  
+
     return df
 
 # Create a function to clean the tweets:
+
 
 def cleanTxt(text):
     # Removing @mentions
@@ -166,38 +176,28 @@ if st.button("Recent Tweets"):
         st.write(str(i) + '- ' + tweet.full_text + "\n")
         i = i+1
 
-
-# Create a new column 'Sentiment' with y values predicted
-#df['Sentiment'] = df['Tweets'].apply(getSentiment)
+# Create a Word Cloud
 
 
-# # Create a function to get the subjectivity
-# def getSubjectivity(text):
-#     return TextBlob(text).sentiment.subjectivity
 
-    
-    # df['Polarity'] = df['Tweets'].apply(getPolarity)
-
-    # def getAnalysis(score):
-    # 	if score < 0:
-    # 		return 'Negative'
-
-    # 	elif score == 0:
-    # 		return 'Neutral'
-
-    # 	else:
-    # 		return 'Positive'
-
-    # df['Analysis'] = df['Polarity'].apply(getAnalysis)
+def Word_Cloud(df_column):
+    df_column = df_column.apply(cleanTxt)
+    # Join all the tweets in Df["Tweets"] by a space
+    Words = " ".join([tweets for tweets in df_column])
+    wordcloud = WordCloud(width=500, height=300, random_state=21,
+                          max_font_size=110, background_color="white").generate(Words)
+    plt.imshow(wordcloud, interpolation="bilinear")
+    plt.axis('off')
+    img = wordcloud._to_file("img/word_cloud.png")
+    return img
 
 
-# Call the sentiment analysis algorythm
-# Load the model
-# from tensorflow.keras.models import load_model
-# model = load_model("mnist_trained.h5")
-
-# def getSubjectivity(text):
-# 				return TextBlob(text).sentiment.subjectivity
+# Steamlit - Creating a button to show the word cloud
+if st.button("Word Cloud"):
+    st.success("Fetching the word cloud")
+    df = get_data(tweet_handle)
+    wordcloud = Word_Cloud(df["Tweets"])
+    st.image(wordcloud)
 
 
 # if __name__=='__main__':
