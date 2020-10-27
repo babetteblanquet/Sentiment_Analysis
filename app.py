@@ -25,6 +25,20 @@ from config import accessTokenSecret
 # Load the model
 model = load_model("Datasets/tweeter_ml_trained_50000.h5")
 
+## Set up Streamlit in wide mode:
+def _max_width_():
+    max_width_str = f"max-width: 2000px;"
+    st.markdown(
+        f"""
+    <style>
+    .reportview-container .main .block-container{{
+        {max_width_str}
+    }}
+    </style>    
+    """,
+        unsafe_allow_html=True,
+    )
+
 ### Streamlit Title - #####
 
 # st.title("Streamlit example")
@@ -97,7 +111,6 @@ def preprocessing(messages):
     X_final = np.array(embedded_docs)
     return(X_final)
 
-
 def getSentiment(array):
     #df['Tweets'] = df['Tweets'].apply(cleanTxt)
     messages = array
@@ -152,39 +165,6 @@ if st.button("Recent Tweets"):
     for tweet in posts[0:5]:
         st.write(str(i) + '- ' + tweet.full_text + "\n")
         i = i+1
-
-
-#Create a function for One_hot representation
-# each word in the corpus is allocated a number within the sentence.
-
-# def onehot():
-#     voc_size=5000
-#     onehot_repr=[one_hot(words,voc_size)for words in corpus] 
-#     return onehot_repr
-
-
-#
-#Use pad sequencing to ensure all sentences are the same length.
-#Set up the common length of each sentence. We used the max_value of number of words
-# def word_embedding(onehot_repr):
-#     sent_length=31
-#     #Embebbed each sentence as a matrix
-#         embedded_docs=pad_sequences(onehot_repr,padding='pre',maxlen=sent_length)
-#         return(embedded_docs)
-
-    #Storing X in the variable messages
-def getSentiment(array):
-    #df['Tweets'] = df['Tweets'].apply(cleanTxt)
-    X = df["Tweets"]
-    #Storing X in the variable messages
-    messages = X.copy()
-    #Preprocessing tweets to fit the model
-    X_final = preprocessing(messages)
-    #Predict y values on X_final
-    y_pred=model.predict_classes(X_final)
-
-    return y_pred
-
 
 
 # Create a new column 'Sentiment' with y values predicted
