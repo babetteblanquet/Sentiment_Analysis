@@ -178,8 +178,6 @@ if st.button("Recent Tweets"):
 
 # Create a Word Cloud
 
-
-
 def Word_Cloud(df_column):
     df_column = df_column.apply(cleanTxt)
     # Join all the tweets in Df["Tweets"] by a space
@@ -188,7 +186,9 @@ def Word_Cloud(df_column):
                           max_font_size=110, background_color="white").generate(Words)
     plt.imshow(wordcloud, interpolation="bilinear")
     plt.axis('off')
-    img = wordcloud._to_file("img/word_cloud.png")
+    img = wordcloud.to_file("img/word_cloud.png")
+    img= Image.open("img/word_cloud.png")
+
     return img
 
 
