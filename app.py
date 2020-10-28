@@ -26,24 +26,6 @@ from config import accessTokenSecret
 # Load the model
 model = load_model("Datasets/tweeter_ml_trained_1.6.h5")
 
-# Set up Streamlit in wide mode:
-
-def _max_width_():
-    max_width_str = f"max-width: 2000px;"
-    st.markdown(
-        f"""
-    <style>
-    .reportview-container .main .block-container{{
-        {max_width_str}
-    }}
-    </style>
-    """,
-        unsafe_allow_html=True,
-    )
-
-### Streamlit Title - #####
-
-
 # st.title("Streamlit example")
 html_temp = """
     <div style="background-color:#1da1f2;padding:10px">
@@ -52,13 +34,21 @@ html_temp = """
     """
 st.markdown(html_temp, unsafe_allow_html=True)
 
-st.title("Search tweets with # or @")
-st.sidebar.subheader("""Get the 100 latest tweets""")
-st.write("Get the 100 latest tweets")
+#Steamlit - Logo on Sidebar
+logo = Image.open("img/logo.png")
+st.sidebar.image(logo)
+
+#Streamlit Subheader
+#Customising Streamlit subtitle in blue:
+html_subtitle4 = """
+    <div style="background-color:white">
+    <h3 style="color:#1da1f2;text-align:left;"> Search Twitter</h3>
+    </div>
+    """
+st.markdown(html_subtitle4, unsafe_allow_html=True)
 
 # Streamlit User input #
 text_input = st.text_input("Enter tweet handle with @ or #.")
-
 
 ####   Tweepy API   ##########
 # Create the authentication object
@@ -167,16 +157,16 @@ def cleanTxt(text):
     text = re.sub(r'https?:\/\/\S+', '', text)
     return text
 
-
-# Steamlit - Creating a button to show the tweets in a dataframe
-if st.sidebar.button("Show Data"):
-    st.success("Fetching Last 100 Tweets")
-    df = get_data(tweet_handle)
-    # df.loc[df["Sentiment"] == 0, "Sentiment"] = "Negative"
-    # df.loc[df["Sentiment"] == 1, "Sentiment"] = "Positive"
-    st.write(df, width = 1500, height = 500)
-
 # Steamlit - Creating a button to fetch the five recent tweets:
+#Customising Streamlit subtitle in blue:
+html_subtitle2 = """
+    <div style="background-color:white">
+    <h3 style="color:#1da1f2;text-align:left;"> Check the last five tweets</h3>
+    </div>
+    """
+st.markdown(html_subtitle2, unsafe_allow_html=True)
+
+#Action when Streamlit button is pressed:
 if st.button("Recent Tweets"):
     st.write("Show the five recent tweets")
     i = 1
@@ -190,7 +180,7 @@ def Word_Cloud(df_column):
     df_column = df_column.apply(cleanTxt)
     # Join all the tweets in Df["Tweets"] by a space
     Words = " ".join([tweets for tweets in df_column])
-    wordcloud = WordCloud(width=500, height=300, random_state=21,
+    wordcloud = WordCloud(width=640, height=480, random_state=21,
                           max_font_size=110, background_color="white").generate(Words)
     plt.imshow(wordcloud, interpolation="bilinear")
     plt.axis('off')
@@ -198,14 +188,6 @@ def Word_Cloud(df_column):
     img= Image.open("img/word_cloud.png")
 
     return img
-
-# Steamlit - Creating a button to show the word cloud
-if st.button("Word Cloud"):
-    st.success("Fetching the word cloud")
-    df = get_data(tweet_handle)
-    wordcloud = Word_Cloud(df["Tweets"])
-    st.image(wordcloud)
-    
 
 def bar_chart():
     sentiment_df = df.groupby(["Sentiment"]).count()
@@ -220,14 +202,43 @@ def bar_chart():
     img2 = Image.open("img/bar.png")
     return img2
 
-# Steamlit - Creating a button to show the word cloud
-if st.button("Analysis"):
-    st.success("Analysing Sentiment of Tweets")
+
+# Steamlit - Creating a button to show the sentiment analysis and word cloud
+#Customising Streamlit subtitle in blue:
+html_subtitle3 = """
+    <div style="background-color:white">
+    <h3 style="color:#1da1f2;text-align:left;"> Get Tweets' sentiment and word cloud</h3>
+    </div>
+    """
+st.markdown(html_subtitle3, unsafe_allow_html=True)
+#Display charts when button pressed:
+if st.button("Sentiment Analysis"):
     df = get_data(tweet_handle)
-    # df.loc[df["Sentiment"] == 0, "Sentiment"] = "Negative"
-    # df.loc[df["Sentiment"] == 1, "Sentiment"] = "Positive"
     chart = bar_chart()
-    st.image(chart)
+    wordcloud = Word_Cloud(df["Tweets"])
+    st.image([chart,wordcloud])
+
+# Steamlit - Creating a button to show the tweets in a dataframe
+#Customising Streamlit subtitle in blue:
+html_subtitle4 = """
+    <div style="background-color:white">
+    <h3 style="color:#1da1f2;text-align:left;"> Check the data </h3>
+    </div>
+    """
+st.markdown(html_subtitle4, unsafe_allow_html=True)
+#Render dataframe when button pressed:
+if st.button("Show Data"):
+    df = get_data(tweet_handle)
+    st.table(df)
+
+# # Steamlit - Creating a button to show the word cloud
+# if st.button("Analysis"):
+#     st.success("Analysing Sentiment of Tweets")
+#     df = get_data(tweet_handle)
+#     # df.loc[df["Sentiment"] == 0, "Sentiment"] = "Negative"
+#     # df.loc[df["Sentiment"] == 1, "Sentiment"] = "Positive"
+#     chart = bar_chart()
+#     st.image(chart)
 
 
 
