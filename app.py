@@ -24,10 +24,9 @@ from config import accessToken
 from config import accessTokenSecret
 
 # Load the model
-model = load_model("Datasets/tweeter_ml_trained_50000.h5")
+model = load_model("Datasets/tweeter_ml_trained_1.6.h5")
 
 # Set up Streamlit in wide mode:
-
 
 def _max_width_():
     max_width_str = f"max-width: 2000px;"
@@ -37,7 +36,7 @@ def _max_width_():
     .reportview-container .main .block-container{{
         {max_width_str}
     }}
-    </style>    
+    </style>
     """,
         unsafe_allow_html=True,
     )
@@ -53,8 +52,8 @@ html_temp = """
     """
 st.markdown(html_temp, unsafe_allow_html=True)
 
-st.title("Get the 100 latest tweets")
-st.subheader("""Get the 100 latest tweets""")
+st.title("Search tweets with # or @")
+st.sidebar.subheader("""Get the 100 latest tweets""")
 st.write("Get the 100 latest tweets")
 
 # Streamlit User input #
@@ -121,7 +120,7 @@ def preprocessing(messages):
 
 
 def getSentiment(array):
-    #df['Tweets'] = df['Tweets'].apply(cleanTxt)
+    # df['Tweets'] = df['Tweets'].apply(cleanTxt)
     messages = array
     # Preprocessing tweets to fit the model
     X_final = preprocessing(messages)
@@ -130,6 +129,12 @@ def getSentiment(array):
 
     return y_pred
 
+
+def getAnalysis(score):
+    if score == 1:
+        return "Positive"
+    else:
+        return "Negative"
 
 # Create a dataframe with a column called Tweets
 def get_data(user_name):
@@ -144,7 +149,8 @@ def get_data(user_name):
     X = df['Tweets']
     y = getSentiment(X)
     df['Sentiment'] = y
-
+    df["Sentiment"] = df['Sentiment'].apply(getAnalysis)
+        
     return df
 
 # Create a function to clean the tweets:
@@ -163,10 +169,12 @@ def cleanTxt(text):
 
 
 # Steamlit - Creating a button to show the tweets in a dataframe
-if st.button("Show Data"):
+if st.sidebar.button("Show Data"):
     st.success("Fetching Last 100 Tweets")
     df = get_data(tweet_handle)
-    st.write(df)
+    # df.loc[df["Sentiment"] == 0, "Sentiment"] = "Negative"
+    # df.loc[df["Sentiment"] == 1, "Sentiment"] = "Positive"
+    st.write(df, width = 1500, height = 500)
 
 # Steamlit - Creating a button to fetch the five recent tweets:
 if st.button("Recent Tweets"):
@@ -191,13 +199,38 @@ def Word_Cloud(df_column):
 
     return img
 
-
 # Steamlit - Creating a button to show the word cloud
 if st.button("Word Cloud"):
     st.success("Fetching the word cloud")
     df = get_data(tweet_handle)
     wordcloud = Word_Cloud(df["Tweets"])
     st.image(wordcloud)
+    
+
+def bar_chart():
+    sentiment_df = df.groupby(["Sentiment"]).count()
+    #Create bargraph
+    fig = sentiment_df.plot(kind='bar', stacked=True, color= ["#1da1f2"], legend=False, rot=0)
+    # Set textual properties
+    plt.title("Sentiment Analysis of Tweets")
+    plt.ylabel("Number of Tweets")
+    plt.xlabel(" ")
+    #Save plot
+    img2 = plt.savefig("img/bar.png")
+    img2 = Image.open("img/bar.png")
+    return img2
+
+# Steamlit - Creating a button to show the word cloud
+if st.button("Analysis"):
+    st.success("Analysing Sentiment of Tweets")
+    df = get_data(tweet_handle)
+    # df.loc[df["Sentiment"] == 0, "Sentiment"] = "Negative"
+    # df.loc[df["Sentiment"] == 1, "Sentiment"] = "Positive"
+    chart = bar_chart()
+    st.image(chart)
+
+
+
 
 
 # if __name__=='__main__':
