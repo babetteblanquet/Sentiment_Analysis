@@ -14,14 +14,13 @@ from tensorflow.keras.preprocessing.text import one_hot
 from tensorflow.keras.models import load_model
 # Immport nltk dependencies
 import nltk
-import re
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 # Import API keys
-from config import consumerKey
-from config import consumerSecret
-from config import accessToken
-from config import accessTokenSecret
+from config_1 import consumerKey
+from config_1 import consumerSecret
+from config_1 import accessToken
+from config_1 import accessTokenSecret
 
 # Load the model
 model = load_model("Datasets/tweeter_ml_trained_1.6.h5")
@@ -241,8 +240,5 @@ if st.button("Show Data"):
 #     st.image(chart)
 
 
-
-
-
 # if __name__=='__main__':
-#     main()
+#     app()
