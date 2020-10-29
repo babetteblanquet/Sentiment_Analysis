@@ -1,4 +1,4 @@
-corpus
 stopwords
-stem.porter
-PorterStemmer
+util
+data
+
