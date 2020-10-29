@@ -1,3 +1,4 @@
-wordnet
-pros_cons
-reuters
+corpus
+stopwords
+stem.porter
+PorterStemmer
