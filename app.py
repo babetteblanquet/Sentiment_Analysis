@@ -97,10 +97,10 @@ def preprocessing(messages):
         corpus.append(review)
     # One_hot representation
     # each word in the corpus is allocated a number within the sentence.
-    voc_size = 5000
+    voc_size = 10000
     onehot_repr = [one_hot(words, voc_size)for words in corpus]
     # Word embedding
-    sent_length = 31
+    sent_length = 50
     # Embebbed each sentence as a matrix
     embedded_docs = pad_sequences(
         onehot_repr, padding='pre', maxlen=sent_length)
