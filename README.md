@@ -42,7 +42,7 @@ Please note the dataset I used is not in the repository due to the size of the f
    
 The other files:
 - app.py is the app. It is run by Streamlit. So to run it you have to enter: streamlit run app.py
-- config_1.py with keys
+- config.py for authentication
 - Procfile, nltk.txt, and setup.sh for Heroku deployment configurations
 - requirements.txt with all the requirements needed to run the app.
 
