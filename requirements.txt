@@ -8,3 +8,4 @@ tweepy==3.9.0
 config==0.5.0.post0
 matplotlib==3.3.2
 Pillow==8.0.1
+scikit-learn=0.23.1

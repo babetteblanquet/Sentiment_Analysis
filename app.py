@@ -23,9 +23,10 @@ from config_1 import accessToken
 from config_1 import accessTokenSecret
 
 # Load the model
-model = load_model("Datasets/tweeter_ml_trained_1.6.h5")
+model = load_model("Model/tweeter_ml_trained_1.6.h5")
 
-# st.title("Streamlit example")
+# st.title("Streamlit title -Twitter sentiment analysis")
+#Customising Streamlit title with blue background:
 html_temp = """
     <div style="background-color:#1da1f2;padding:10px">
     <h1 style="color:white;text-align:center;"> Twitter sentiment analysis</h1>
@@ -33,7 +34,7 @@ html_temp = """
     """
 st.markdown(html_temp, unsafe_allow_html=True)
 
-#Steamlit - Logo on Sidebar
+#Streamlit - Display logo on Sidebar
 logo = Image.open("img/logo.png")
 st.sidebar.image(logo)
 
@@ -68,8 +69,8 @@ else:
     posts = api.search(
         q=tweet_handle, retweeted="False", result_type='recent', count=100, lang="en", tweet_mode="extended")
 
-# Create a function to preprocess the tweets to fit our ML model:
 
+# Create a function to preprocess the tweets to fit our ML model:
 
 def preprocessing(messages):
     # Initialise PorterStemmer for Stemming
@@ -109,7 +110,6 @@ def preprocessing(messages):
 
 
 def getSentiment(array):
-    # df['Tweets'] = df['Tweets'].apply(cleanTxt)
     messages = array
     # Preprocessing tweets to fit the model
     X_final = preprocessing(messages)
@@ -132,8 +132,6 @@ def get_data(user_name):
     df = df.dropna()
     # Drop duplicates
     df = df.drop_duplicates()
-    # Clean the Tweets
-    df['Tweets'] = df['Tweets'].apply(cleanTxt)
     # Create a new column 'Sentiment' with y values predicted
     X = df['Tweets']
     y = getSentiment(X)
@@ -156,7 +154,7 @@ def cleanTxt(text):
     text = re.sub(r'https?:\/\/\S+', '', text)
     return text
 
-# Steamlit - Creating a button to fetch the five recent tweets:
+# Streamlit - Creating a button to fetch the five recent tweets:
 #Customising Streamlit subtitle in blue:
 html_subtitle2 = """
     <div style="background-color:white">
@@ -230,15 +228,4 @@ if st.button("Show Data"):
     df = get_data(tweet_handle)
     st.table(df)
 
-# # Steamlit - Creating a button to show the word cloud
-# if st.button("Analysis"):
-#     st.success("Analysing Sentiment of Tweets")
-#     df = get_data(tweet_handle)
-#     # df.loc[df["Sentiment"] == 0, "Sentiment"] = "Negative"
-#     # df.loc[df["Sentiment"] == 1, "Sentiment"] = "Positive"
-#     chart = bar_chart()
-#     st.image(chart)
 
-
-# if __name__=='__main__':
-#     app()
