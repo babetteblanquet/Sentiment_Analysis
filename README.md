@@ -1,9 +1,9 @@
 # Twitter Sentiment_Analysis #
-### A machine learning model giving the sentiment of Tweets deployed in a web application. ###
+### A machine learning model predicting the sentiment of Tweets ###
 
-[Twitter Sentiment Analysis](https://twitter-sentim-analysis.herokuapp.com/)
+You can check the web application deployed on Heroku here: [Twitter Sentiment Analysis](https://twitter-sentim-analysis.herokuapp.com/)
 
-** Project Summary: **
+### Project Summary: ###
 1. The problem
 Social media platforms are essential for businesses to reinforce their brand and connect with their followers and build their community.
 Social media platforms like Twitter provide analytics on the performance of your tweets and how to improve their engagement.
