@@ -79,22 +79,25 @@ def preprocessing(messages):
     corpus = []
 # Create a loop to clean all the text in messages:
     for i in range(0, len(messages)):
-        # print index
-        print(i)
-    # use re (regular expressions) to substitute all characters except [a-zA-Z] by blank in message 'text'
-        review = re.sub('[^a-zA-Z]', ' ', messages[i])
+        try:
+        # use re (regular expressions) to substitute all characters except [a-zA-Z] by blank in message 'text'
+            review = re.sub('[^a-zA-Z]', ' ', messages[i])
     # convert all the characters as lower case
-        review = review.lower()
+            review = review.lower()
     # split all the words in each sentence to be able to later remove the stopwords
-        review = review.split()
+            review = review.split()
 
     # create a loop in review: for each word in review, keep only words that are not stopwords list and apply 'Stemming'
-        review = [ps.stem(word)
+            review = [ps.stem(word)
                   for word in review if not word in stopwords.words('english')]
     # join words with a space to build the review
-        review = ' '.join(review)
+            review = ' '.join(review)
     # append the review into the corpus
-        corpus.append(review)
+            corpus.append(review)
+        except KeyError:
+            corpus.append("Oops, message not retrieved!")
+            pass
+        
     # One_hot representation
     # each word in the corpus is allocated a number within the sentence.
     voc_size = 10000
@@ -137,6 +140,7 @@ def get_data(user_name):
     y = getSentiment(X)
     df['Sentiment'] = y
     df["Sentiment"] = df['Sentiment'].apply(getAnalysis)
+    
         
     return df
 
